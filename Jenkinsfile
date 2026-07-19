@@ -5,50 +5,29 @@ pipeline {
     stages {
 
         stage('Checkout') {
-
             steps {
-
-                git branch: 'main',
-                    url: 'https://github.com/your-user/my-python-project.git'
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
-
             steps {
-
                 sh '''
-                    python3 -m pip install -r requirements.txt
+                    python3 -m venv venv
+
+                    . venv/bin/activate
+
+                    pip install -r requirements.txt
                 '''
             }
         }
 
         stage('Run Tests') {
-
             steps {
-
                 sh '''
-                    pytest tests/
-                '''
-            }
-        }
+                    . venv/bin/activate
 
-        stage('Build') {
-
-            steps {
-
-                sh '''
-                    echo "Build successful"
-                '''
-            }
-        }
-
-        stage('Deploy') {
-
-            steps {
-
-                sh '''
-                    echo "Deploying application..."
+                    pytest tests/ -v
                 '''
             }
         }
@@ -57,13 +36,11 @@ pipeline {
     post {
 
         success {
-
-            echo 'Pipeline completed successfully.'
+            echo 'Tests passed successfully!'
         }
 
         failure {
-
-            echo 'Pipeline failed.'
+            echo 'Tests failed!'
         }
     }
 }
