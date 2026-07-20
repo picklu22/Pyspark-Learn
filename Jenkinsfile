@@ -18,6 +18,8 @@ pipeline {
                     . venv/bin/activate
 
                     pip install -r requirements.txt
+
+                    pip install pytest pytest-html
                 '''
             }
         }
@@ -27,7 +29,12 @@ pipeline {
                 sh '''
                     . venv/bin/activate
 
-                    pytest tests/ -v
+                    mkdir -p reports
+
+                    pytest tests/ -v \
+                    --junitxml=reports/results.xml \
+                    --html=reports/report.html \
+                    --self-contained-html
                 '''
             }
         }
@@ -35,12 +42,19 @@ pipeline {
 
     post {
 
+        always {
+
+            junit 'reports/results.xml'
+
+            archiveArtifacts artifacts: 'reports/*', fingerprint: true
+        }
+
         success {
-            echo 'Tests passed successfully!'
+            echo 'All tests passed successfully!'
         }
 
         failure {
-            echo 'Tests failed!'
+            echo 'Some tests failed. Check the Jenkins report.'
         }
     }
 }
