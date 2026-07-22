@@ -36,30 +36,27 @@ pipeline {
 
         stage('Push Reports to GitHub') {
             steps {
-                // Dynamically binds your 'Secret text' credential to the $GIT_TOKEN variable
+                // Securely binds your secret token to the $GIT_TOKEN shell variable
                 withCredentials([string(credentialsId: 'GITHUBTOKEN', variable: 'GIT_TOKEN')]) {
                     sh '''
                         # 1. Configure local Git user identity
                         git config user.name "Jenkins CI"
                         git config user.email "jenkins@yourdomain.com"
 
-                        # 2. Force checkout and sync with remote branch
-                        git checkout -f main
-                        git config pull.rebase false
-                        git pull origin main --strategy-option=theirs --allow-unrelated-histories
+                        # 2. Sync your Git tracking metadata without touching workspace files
+                        git fetch origin main
 
-                        # 3. Add the reports directory to the staging index
+                        # 3. Align your local main branch pointer to match GitHub exactly
+                        git checkout -B main origin/main
+
+                        # 4. Stage your newly generated test reports directory
                         git add reports/
                         
-                        # 4. Check specifically if anything inside the reports folder is modified or new
-                        if [ -n "$(git status --porcelain reports/)" ]; then
-                            git commit -m "chore: update test reports [skip ci]"
+                        # 5. Commit changes safely (keeps the build green if files match exactly)
+                        git commit -m "chore: update test reports [skip ci]" --allow-empty
 
-                            # 5. Push using the authenticated token URL string
-                            git push https://picklu22:${GIT_TOKEN}@://github.com main
-                        else
-                            echo "Reports folder matches upstream exactly. Skipping push."
-                        fi
+                        # 6. Push the committed updates directly to your remote repository
+                        git push https://picklu22:${GIT_TOKEN}@://github.com main
                     '''
                 }
             }
