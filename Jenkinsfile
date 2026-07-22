@@ -43,18 +43,21 @@ pipeline {
                         git config user.name "Jenkins CI"
                         git config user.email "jenkins@yourdomain.com"
 
-                        # 2. Force checkout to main branch (-f overrides tracking conflicts)
+                        # 2. Force checkout to main branch
                         git checkout -f main
-                        git pull origin main
 
-                        # 3. Force add the reports directory
+                        # 3. Explicitly tell Git how to reconcile divergent histories
+                        git config pull.rebase false
+                        git pull origin main --strategy-option=theirs --allow-unrelated-histories
+
+                        # 4. Force add the reports directory
                         git add reports/
                         
-                        # 4. Only commit if the files have actually changed
+                        # 5. Only commit if the files have actually changed
                         if ! git diff-index --quiet HEAD --; then
                             git commit -m "chore: update test reports [skip ci]"
 
-                            # 5. Push using the authenticated token URL string
+                            # 6. Push using the authenticated token URL string
                             git push https://picklu22:${GIT_TOKEN}@://github.com main
                         else
                             echo "No changes found in reports folder. Skipping push."
