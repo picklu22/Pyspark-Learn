@@ -37,7 +37,7 @@ pipeline {
         stage('Push Reports to GitHub') {
             steps {
                 // Ensure you have added a 'Username with password' credential in Jenkins with ID 'github-token'
-                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'picklu22', passwordVariable: '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')]) {
+                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                     sh '''
                         # 1. Configure local Git user identity
                         git config user.name "Jenkins CI"
@@ -81,4 +81,3 @@ pipeline {
         }
     }
 }
-
