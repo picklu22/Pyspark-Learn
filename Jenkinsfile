@@ -36,8 +36,8 @@ pipeline {
 
         stage('Push Reports to GitHub') {
             steps {
-                // Ensure you have added a 'Username with password' credential in Jenkins with ID 'github-token'
-                withCredentials([usernamePassword(credentialsId: 'GITHUBTOKEN', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                // Dynamically binds your 'Secret text' credential to the $GIT_TOKEN variable
+                withCredentials([string(credentialsId: 'GITHUBTOKEN', variable: 'GIT_TOKEN')]) {
                     sh '''
                         # 1. Configure local Git user identity
                         git config user.name "Jenkins CI"
@@ -54,8 +54,8 @@ pipeline {
                         if ! git diff-index --quiet HEAD --; then
                             git commit -m "chore: update test reports [skip ci]"
 
-                            # 5. Push using the authenticated token URL
-                            git push https://${GIT_USER}:${GIT_TOKEN}@://github.com main
+                            # 5. Push using the authenticated token URL string
+                            git push https://picklu22:${GIT_TOKEN}@://github.com main
                         else
                             echo "No changes found in reports folder. Skipping push."
                         fi
