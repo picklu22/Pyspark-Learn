@@ -31,7 +31,7 @@ pipeline {
 
                     mkdir -p reports
 
-                    pytest tests/ -v \
+                    pytest test/ -v \
                     --junitxml=reports/results.xml \
                     --html=reports/report.html \
                     --self-contained-html
