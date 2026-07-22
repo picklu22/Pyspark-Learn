@@ -1,4 +1,4 @@
-from app import add, subtract
+from App import add, subtract
 
 
 def test_add():
