@@ -43,8 +43,8 @@ pipeline {
                         git config user.name "Jenkins CI"
                         git config user.email "jenkins@yourdomain.com"
 
-                        # 2. Move out of detached HEAD state to the main branch
-                        git checkout main
+                        # 2. Force checkout to main branch (-f overrides tracking conflicts)
+                        git checkout -f main
                         git pull origin main
 
                         # 3. Force add the reports directory
