@@ -56,7 +56,7 @@ pipeline {
                         git commit -m "chore: update test reports [skip ci]" --allow-empty
 
                         # 6. Push the committed updates directly to your remote repository
-                        git push https://picklu22:${GIT_TOKEN}@://github.com main
+                        git push https://picklu22:${GIT_TOKEN}@//github.com main
                     '''
                 }
             }
